@@ -7,7 +7,7 @@
 - Fila PostgreSQL, deduplicação persistente, revalidação, limites de envio e tratamento de resultado incerto.
 - Telegram com escape HTML, checagem de permissões e confirmação da resposta; dry-run como padrão.
 - Configuração externa, Docker Compose, migração, documentação e 34 testes aprovados no ambiente de validação e repetidos com sucesso no Windows do proprietário.
-- Estrutura para GitHub, scripts de aplicação e workflow de testes/geração de JAR. Execução remota ainda depende do envio do código e das permissões da integração.
+- Repositório GitHub recriado com histórico limpo; workflow de testes/geração de JAR executado com sucesso na branch `main`.
 
 ## Trabalho de desenvolvimento que pode ser feito a seguir
 
@@ -27,7 +27,7 @@ Essas funções futuras **não estão implementadas neste pacote**. Testes com r
 1. Manter o token Telegram atual e as senhas somente nas configurações locais/segredos do ambiente. Não cole segredos em issues, commits ou mensagens.
 2. Obter/configurar as credenciais e permissões Amazon/Mercado Livre no ambiente de execução.
 3. Escolher produtos, vendedores, preços-alvo e o canal; adicionar o bot como administrador.
-4. Aplicar/publicar a branch e conferir o workflow Verify. Instruções em [GITHUB.md](GITHUB.md).
+4. Manter o workflow `Verify` obrigatório nas mudanças futuras e revisar a visibilidade do repositório somente depois das conferências de segurança.
 5. Conferir as prévias em dry-run e validar as condições das ofertas.
 6. Autorizar a publicação real quando tudo estiver conferido; manter o computador/servidor ligado.
 
@@ -46,5 +46,6 @@ Manter dry-run e fontes desabilitadas até a configuração das credenciais e do
 - Trava interna adicionada ao teste manual e confirmação temporária removida da configuração do IntelliJ.
 - Banco isolado `bot_ofertas_test` e usuário `bot_test` criados; suíte Maven aprovada no Windows usando esse banco.
 - Token atual não foi incorporado aos arquivos do projeto.
+- Repositório antigo excluído, novo histórico limpo publicado em `main` e workflow `Verify` aprovado no GitHub Actions.
 
-Próximas frentes independentes do Mercado Livre: publicar a versão consolidada no GitHub, preparar backup/monitoramento e escolher a infraestrutura para operação 24 horas. As fontes reais permanecem desabilitadas até suas credenciais e autorizações estarem disponíveis.
+Próximas frentes independentes do Mercado Livre: preparar backup/monitoramento e escolher a infraestrutura para operação 24 horas. As fontes reais permanecem desabilitadas até suas credenciais e autorizações estarem disponíveis.

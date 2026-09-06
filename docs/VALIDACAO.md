@@ -134,3 +134,11 @@ O proprietário criou o banco isolado `bot_ofertas_test`, pertencente ao usuári
 As variáveis `TEST_DB_*` apontaram somente para o banco de testes; `bot_ofertas_v2` não foi usado pela suíte. A senha foi lida de forma oculta e removida do ambiente do PowerShell ao final. `LiveTelegramPipelineIT` não faz parte da seleção normal do Surefire, portanto essa execução não enviou outra mensagem ao Telegram.
 
 Com isso, ficaram validados no Windows nativo: compilação, contexto Spring, migração Flyway, regras de oferta, conectores simulados, concorrência da fila em PostgreSQL, tratamento do Telegram simulado e empacotamento Maven. Permanecem fora desse alcance as APIs reais dos marketplaces, carga de produção, Docker e operação contínua.
+
+## Publicação limpa e GitHub Actions - 06/09/2026
+
+O proprietário excluiu o repositório remoto antigo e criou `Caique-java/bot-ofertas` novamente como repositório privado vazio. A versão consolidada foi inicializada localmente com um único commit raiz (`3d9fb52`), após uma conferência que informou 57 arquivos preparados, zero arquivos privados incluídos e zero tokens Telegram encontrados.
+
+O push da branch `main` foi concluído. O workflow `Verify` associado ao commit `3d9fb52` terminou com sucesso em aproximadamente 1 minuto e 15 segundos. Assim, o POM padrão, JDK 25, PostgreSQL 17, os 34 testes e a criação dos artefatos foram exercitados no GitHub Actions sem credenciais de Telegram ou marketplaces.
+
+O repositório foi mantido privado durante esta validação. O aplicativo não foi implantado pelo Actions; o workflow termina depois de testar e empacotar.

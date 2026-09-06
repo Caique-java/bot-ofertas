@@ -174,3 +174,9 @@ O manifesto `arquivos-atualizacao.json` acompanha somente o ZIP entregue e é ig
 O aplicativo iniciou no IntelliJ com PostgreSQL nativo, migração V1 aplicada e saúde UP. Token, canal privado e permissão Telegram foram confirmados; um envio manual por script também foi confirmado. A etapa seguinte é cadastrar a aplicação Mercado Livre. As fontes continuam desabilitadas e a publicação automática pelo Java ainda não foi homologada.
 
 Para apresentar o trabalho em vídeo ou entrevista, consulte [o resumo do projeto](docs/RESUMO_ENTREVISTA.md). Os detalhes de evidência e limites estão em [VALIDACAO.md](docs/VALIDACAO.md).
+
+## Atualização de validação e GitHub - 06/09/2026
+
+O pipeline controlado completo do Java foi aprovado no canal privado: oferta de teste -> PostgreSQL -> fila -> revalidação -> Telegram, com `message_id=37` e deduplicação confirmada. A suíte de 34 testes também passou no Windows usando um banco exclusivo de testes.
+
+O repositório remoto anterior, que continha credenciais revogadas no histórico, foi excluído pelo proprietário. Um repositório privado vazio com o mesmo nome foi criado e recebeu somente um commit raiz limpo. O workflow `Verify` desse commit passou no GitHub Actions com JDK 25 e PostgreSQL 17. As integrações reais de marketplace e a operação 24 horas continuam pendentes; `BOT_DRY_RUN=true`, `ML_ENABLED=false` e `AMAZON_ENABLED=false` permanecem como configuração segura inicial.

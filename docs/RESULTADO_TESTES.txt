@@ -10,3 +10,9 @@
 [INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0
 [INFO] BUILD SUCCESS
 [INFO] Total time:  40.806 s
+
+VALIDACOES POSTERIORES CONFIRMADAS PELO PROPRIETARIO EM 06/09/2026
+- Maven verify: 34 testes aprovados no Windows, Java 25.0.2 e PostgreSQL 18.4, usando bot_ofertas_test.
+- Pipeline controlado Java -> PostgreSQL -> fila -> Telegram aprovado com message_id=37.
+- GitHub Actions Verify aprovado no commit limpo 3d9fb52, com JDK 25 e PostgreSQL 17.
+- APIs reais dos marketplaces, Docker e operacao 24 horas continuam pendentes.
