@@ -41,5 +41,5 @@ logs/
 backups/
 *.dump
 
-# Generated only for applying the delivered ZIP to the original clone
+# Local manifest used by optional update packages
 /arquivos-atualizacao.json

@@ -27,7 +27,7 @@ Essas funções futuras **não estão implementadas neste pacote**. Testes com r
 1. Manter o token Telegram atual e as senhas somente nas configurações locais/segredos do ambiente. Não cole segredos em issues, commits ou mensagens.
 2. Obter/configurar as credenciais e permissões Amazon/Mercado Livre no ambiente de execução.
 3. Escolher produtos, vendedores, preços-alvo e o canal; adicionar o bot como administrador.
-4. Manter o workflow `Verify` obrigatório nas mudanças futuras e revisar a visibilidade do repositório somente depois das conferências de segurança.
+4. Manter o workflow `Verify` nas mudanças futuras e revisar cuidadosamente qualquer arquivo antes do commit no repositório público.
 5. Conferir as prévias em dry-run e validar as condições das ofertas.
 6. Autorizar a publicação real quando tudo estiver conferido; manter o computador/servidor ligado.
 
@@ -46,6 +46,6 @@ Manter dry-run e fontes desabilitadas até a configuração das credenciais e do
 - Trava interna adicionada ao teste manual e confirmação temporária removida da configuração do IntelliJ.
 - Banco isolado `bot_ofertas_test` e usuário `bot_test` criados; suíte Maven aprovada no Windows usando esse banco.
 - Token atual não foi incorporado aos arquivos do projeto.
-- Repositório antigo excluído, novo histórico limpo publicado em `main` e workflow `Verify` aprovado no GitHub Actions.
+- Repositório antigo excluído, novo histórico limpo publicado em `main`, dois workflows `Verify` aprovados e repositório tornado público após a conferência de segurança.
 
 Próximas frentes independentes do Mercado Livre: preparar backup/monitoramento e escolher a infraestrutura para operação 24 horas. As fontes reais permanecem desabilitadas até suas credenciais e autorizações estarem disponíveis.

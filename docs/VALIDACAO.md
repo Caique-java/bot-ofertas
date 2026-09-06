@@ -21,7 +21,7 @@ Executada em 04/09/2026 UTC. **34 testes, zero falhas, zero erros, zero testes i
 - Nos 34 testes finais, pool de uma conexão para compatibilidade com o servidor PGlite. O SQL da migração V1 foi executado antes da suíte e o inicializador Flyway foi desativado somente nesse processo de validação.
 - Em uma execução separada, o Flyway real validou e aplicou V1 e o contexto Spring iniciou corretamente contra PGlite, usando bloqueio de sessão (`spring.flyway.postgresql.transactional-lock=false`) por limitação do adaptador de teste.
 
-**Limite da evidência:** a concorrência entre threads passou com serialização pelo pool de uma conexão. Isso não substitui um teste de múltiplas conexões/processos contra PostgreSQL nativo. O workflow fornecido usa PostgreSQL 17 nativo e o POM padrão com JDK 25, mas não pôde ser executado nesta sessão porque a integração GitHub recusou a gravação da branch.
+**Limite daquela evidência inicial:** a concorrência entre threads passou com serialização pelo pool de uma conexão. Os testes posteriores no PostgreSQL nativo do Windows e no GitHub Actions, registrados abaixo, ampliaram essa validação.
 
 O POM de produção permanece com compilação Java 25 pelo compilador padrão do JDK. Não é necessário instalar PGlite ou ECJ para usar o projeto no seu computador; são adaptações exclusivas do ambiente de validação.
 
@@ -45,8 +45,7 @@ O POM de produção permanece com compilação Java 25 pelo compilador padrão d
 - Renovação OAuth Mercado Livre, que continua pendente de implementação/homologação.
 - Compose/Docker e limites sob carga em uma máquina de produção.
 - Concorrência em PostgreSQL 17 nativo com múltiplas conexões.
-- Execução do script aplicar-atualizacao.ps1 no Windows. Os auxiliares de Telegram posteriores tiveram execução confirmada pelo usuário, conforme o adendo.
-- Push, pull request ou execução do GitHub Actions. Gravação negada pela integração: HTTP 403 Resource not accessible by integration.
+- Implantação Docker e operação contínua em uma máquina de produção.
 
 ## Como repetir no ambiente definitivo
 
@@ -64,22 +63,11 @@ bash mvnw -B verify
 
 Os testes limpam suas tabelas nesse banco. As variáveis TEST_DB_* são separadas das variáveis de produção. No CI fornecido, o banco é criado como serviço isolado pelo workflow. Para a validação real dos marketplaces, mantenha dry-run ativo até confirmar as permissões e examinar as prévias.
 
-## Preparação adicional para GitHub — 04/09/2026
+## Preparação inicial para o GitHub — 04/09/2026
 
-O código Java, a migração e os testes Java não foram alterados nesta etapa. O resultado de 34 testes acima pertence à validação anterior; a suíte não foi repetida para as mudanças de documentação e empacotamento.
+O código Java, a migração e os testes Java não foram alterados nessa etapa. Foram conferidos a estrutura do workflow, o isolamento das fontes no CI, o nome do JAR e a ausência do formato de token Telegram nos arquivos preparados.
 
-O script Python foi executado em clones locais temporários do projeto. Verificações aprovadas:
-
-- Aplicação completa dos 55 arquivos do pacote, com conferência dos hashes, remoção dos sete arquivos obsoletos e criação de uma branch, preservando o commit de origem.
-- Recusa de pacote com arquivo modificado antes de alterar o clone.
-- Recusa de clone com mudanças locais, preservando essas mudanças.
-- Recusa de commit-base diferente, sem sobrescrever arquivos.
-
-Também foram conferidos sintaxe Python, sintaxe YAML/estrutura do workflow, isolamento das fontes no CI e correspondência do nome do JAR com o POM. A busca pelo formato do token Telegram exposto não encontrou ocorrências nos arquivos entregues. O pacote não inclui o histórico Git.
-
-O workflow passou a aceitar push em qualquer branch, pull request e execução manual, e disponibiliza o JAR somente após sucesso dos testes. Isso é configuração preparada; não equivale a uma execução bem-sucedida no GitHub. O script aplicar-atualizacao.ps1 e o GitHub Actions continuavam sem validação de execução nessa etapa.
-
-A nova tentativa de enviar esta versão em 04/09/2026 também recebeu HTTP 403 `Resource not accessible by integration`. Nenhuma branch ou pull request foi criado remotamente, e `main` não foi alterada. O pacote inclui instruções para aplicar e enviar a branch pelo clone autenticado do proprietário.
+Os auxiliares usados somente para transportar a atualização até o projeto local foram removidos depois da criação do repositório limpo. O workflow foi executado e aprovado posteriormente, conforme o registro ao final deste documento.
 
 ## Validação manual posterior no Windows - encerramento de 04/09/2026
 
@@ -141,4 +129,4 @@ O proprietário excluiu o repositório remoto antigo e criou `Caique-java/bot-of
 
 O push da branch `main` foi concluído. O workflow `Verify` associado ao commit `3d9fb52` terminou com sucesso em aproximadamente 1 minuto e 15 segundos. Assim, o POM padrão, JDK 25, PostgreSQL 17, os 34 testes e a criação dos artefatos foram exercitados no GitHub Actions sem credenciais de Telegram ou marketplaces.
 
-O repositório foi mantido privado durante esta validação. O aplicativo não foi implantado pelo Actions; o workflow termina depois de testar e empacotar.
+O repositório foi mantido privado durante a validação, recebeu depois o commit documental `ea3f4e8` e teve uma segunda execução verde do workflow. Após a conferência de segurança, foi tornado público. O aplicativo não foi implantado pelo Actions; o workflow termina depois de testar e empacotar.

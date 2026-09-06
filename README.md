@@ -4,11 +4,11 @@ Serviço Java 25 / Spring Boot 3.5.16 / Maven / PostgreSQL para consultar fontes
 
 Leia [DIAGNOSTICO.md](DIAGNOSTICO.md), [docs/INTEGRACOES.md](docs/INTEGRACOES.md) e [docs/VALIDACAO.md](docs/VALIDACAO.md) antes de habilitar publicações. Integrações reais dependem de credenciais, permissões e quotas da sua conta. A coleta pode ficar sem ofertas; funcionamento contínuo não garante disponibilidade absoluta ou descoberta de todo o catálogo.
 
-**Para colocar esta versão no GitHub:** siga [docs/GITHUB.md](docs/GITHUB.md). O workflow `Verify` testa com JDK 25 e PostgreSQL 17 e, quando passa, disponibiliza o JAR em `bot-ofertas-jar`. O GitHub guarda e verifica o projeto; a execução contínua do bot precisa de um computador ou servidor ligado. Veja também [o que está pronto e o que depende das suas contas](docs/PROXIMOS_PASSOS.md).
+**Projeto no GitHub:** o workflow `Verify` testa com JDK 25 e PostgreSQL 17 e, quando passa, disponibiliza o JAR em `bot-ofertas-jar`. O GitHub guarda e verifica o projeto; a execução contínua do bot precisa de um computador ou servidor ligado. Veja [como trabalhar com o repositório](docs/GITHUB.md) e [o que está pronto e o que depende das suas contas](docs/PROXIMOS_PASSOS.md).
 
-## Atenção ao migrar a versão original
+## Segurança da configuração
 
-O commit original contém um token de bot e uma senha no `application.yml`. Foram removidos desta versão, mas **continuam no histórico remoto**. Revogue o token no BotFather, gere outro e troque a senha se ela estiver em uso. Nenhum segredo antigo foi usado para testes. Não restaure a configuração antiga ao fazer rollback.
+Este repositório público começou com um histórico limpo e não contém credenciais reais. Tokens e senhas são fornecidos por variáveis de ambiente ou por arquivos locais ignorados pelo Git. O workflow usa somente uma senha descartável no banco temporário de testes e não acessa Telegram nem marketplaces reais.
 
 O endpoint público `/api/teste/oferta` foi removido, pois permitia a qualquer cliente encaminhar conteúdo ao canal. O GET `/api/preview` existe somente em dry-run e apenas lê ofertas já coletadas.
 
@@ -163,20 +163,14 @@ Antes de atualizar: pause o bot, faça backup e registre o commit/imagem anterio
 
 Para rollback: volte à imagem anterior somente se ela for compatível com o esquema atual. Caso contrário, restaure o backup em outro banco e valide em dry-run. Não use `docker compose down -v` como atualização: isso apaga o volume do banco.
 
-## Aplicar o pacote ao seu GitHub
+## Versionamento no GitHub
 
-O [guia do GitHub](docs/GITHUB.md) mostra como aplicar o ZIP em uma branch do seu clone, revisar, fazer commit/push e abrir um pull request. Há um script PowerShell para Windows e um script Python 3 para Linux/macOS. Eles verificam a integridade dos arquivos e o commit-base antes de aplicar a atualização; os sete componentes antigos conhecidos são removidos para não reintroduzir o fluxo demonstrativo.
+O [guia do GitHub](docs/GITHUB.md) mostra como clonar o projeto, manter configurações privadas fora dos commits, revisar mudanças e executar o workflow. Para alterações futuras, crie uma branch, confira o diff, faça commit e abra um pull request.
 
-O manifesto `arquivos-atualizacao.json` acompanha somente o ZIP entregue e é ignorado pelo Git. Ele verifica os bytes daquele pacote; os scripts de aplicação não são necessários ao clonar uma versão já atualizada. Se seu clone tiver alterações próprias ou estiver em outro commit, faça a integração manualmente em uma branch, preservando suas mudanças.
-
-## Registro de encerramento - 04/09/2026
-
-O aplicativo iniciou no IntelliJ com PostgreSQL nativo, migração V1 aplicada e saúde UP. Token, canal privado e permissão Telegram foram confirmados; um envio manual por script também foi confirmado. A etapa seguinte é cadastrar a aplicação Mercado Livre. As fontes continuam desabilitadas e a publicação automática pelo Java ainda não foi homologada.
-
-Para apresentar o trabalho em vídeo ou entrevista, consulte [o resumo do projeto](docs/RESUMO_ENTREVISTA.md). Os detalhes de evidência e limites estão em [VALIDACAO.md](docs/VALIDACAO.md).
-
-## Atualização de validação e GitHub - 06/09/2026
+## Estado validado em 06/09/2026
 
 O pipeline controlado completo do Java foi aprovado no canal privado: oferta de teste -> PostgreSQL -> fila -> revalidação -> Telegram, com `message_id=37` e deduplicação confirmada. A suíte de 34 testes também passou no Windows usando um banco exclusivo de testes.
 
-O repositório remoto anterior, que continha credenciais revogadas no histórico, foi excluído pelo proprietário. Um repositório privado vazio com o mesmo nome foi criado e recebeu somente um commit raiz limpo. O workflow `Verify` desse commit passou no GitHub Actions com JDK 25 e PostgreSQL 17. As integrações reais de marketplace e a operação 24 horas continuam pendentes; `BOT_DRY_RUN=true`, `ML_ENABLED=false` e `AMAZON_ENABLED=false` permanecem como configuração segura inicial.
+O repositório atual foi criado com histórico limpo, passou duas vezes no GitHub Actions e foi tornado público após a conferência de segurança. As integrações reais de marketplace e a operação 24 horas continuam pendentes; `BOT_DRY_RUN=true`, `ML_ENABLED=false` e `AMAZON_ENABLED=false` permanecem como configuração segura inicial.
+
+Para apresentar o trabalho em vídeo ou entrevista, consulte [o resumo do projeto](docs/RESUMO_ENTREVISTA.md). Os detalhes de evidência e limites estão em [VALIDACAO.md](docs/VALIDACAO.md).

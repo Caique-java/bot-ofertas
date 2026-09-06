@@ -1,84 +1,56 @@
-# Colocar esta versão no GitHub
+# Trabalhar com este repositório no GitHub
 
-Esta é a versão completa do projeto para o repositório `Caique-java/bot-ofertas`. O ZIP contém código-fonte, Maven Wrapper, exemplos de configuração, Docker, testes e o workflow `Verify`. Não envie o ZIP como um único arquivo dentro do repositório: aplique o conteúdo para que o GitHub reconheça o projeto.
+O repositório público `Caique-java/bot-ofertas` usa um histórico limpo. Credenciais reais não fazem parte do código: tokens e senhas devem permanecer somente no ambiente local ou no serviço escolhido para implantação.
 
-O código mantém dry-run habilitado por padrão. O workflow usa banco temporário de teste e fontes desabilitadas; não precisa dos seus tokens e não envia ofertas.
+## Clonar no Windows
 
-## Atualizar seu repositório no Windows
-
-Pré-requisitos: Git instalado e acesso autenticado ao seu GitHub. Você pode fazer o clone e o envio pelo GitHub Desktop, usando a pasta local do repositório nos passos abaixo.
-
-1. Extraia `bot-ofertas-github.zip` em uma pasta separada do seu clone. A pasta extraída chama-se `bot-ofertas` e contém `pom.xml`.
-2. Abra o PowerShell na pasta onde deseja guardar seu clone e execute, se ainda não o tiver:
+Com Git instalado, abra o PowerShell e execute:
 
 ```powershell
+Set-Location 'C:\Users\KAIKE\Downloads'
 git clone https://github.com/Caique-java/bot-ofertas.git
+Set-Location '.\bot-ofertas'
 ```
 
-3. No PowerShell, entre na pasta **extraída do ZIP** e aplique a atualização ao clone. Troque o caminho abaixo pelo caminho real:
+Para configuração local, use `.env.example` e `config/monitoramento.example.yml` apenas como modelos. Os arquivos com valores reais são ignorados pelo Git. O IntelliJ também pode fornecer as variáveis na configuração de execução.
+
+## Rotina segura para alterações
+
+Antes de cada commit, confira exatamente o que mudou:
 
 ```powershell
-.\aplicar-atualizacao.ps1 -Repositorio 'C:\Projetos\bot-ofertas'
+git status --short
+git diff
+git add -- caminho-do-arquivo
+git diff --cached
+git commit -m "Descreva a alteracao realizada"
+git push
 ```
 
-O script exige um clone limpo no commit original `82fea41d024d1b22c942840a230ecfd069b29e7c`. Ele cria uma branch `codex/ofertas-confiaveis-...`, copia os arquivos conferidos e remove os sete componentes antigos. Se houver mudanças próprias, ele para antes de modificar o clone; preserve essas mudanças e integre a atualização manualmente. Não use comandos de descarte para forçar a aplicação.
-
-4. Entre na pasta do **clone atualizado**, confira o resumo e grave/envie a branch:
+Para uma mudança maior, crie uma branch e abra um pull request:
 
 ```powershell
-Set-Location 'C:\Projetos\bot-ofertas'
-git status --short
-git diff --stat
-git add .
-git diff --cached --stat
-git commit -m "Implementa coleta de ofertas e fila persistente"
-git push -u origin HEAD
+git switch -c nome-da-alteracao
+git push -u origin nome-da-alteracao
 ```
 
-Os scripts não fazem commit nem push sozinhos. Confira que só os arquivos esperados estão sendo incluídos. Os segredos devem ficar no seu ambiente de execução; os exemplos são vazios. As remoções de segredos no diff não revogam os valores que já ficaram no histórico.
+Não use `git add .` sem revisar. Nunca envie `.env`, configurações locais, dumps do banco, logs, arquivos da IDE ou credenciais. Se algum segredo for publicado, revogue-o imediatamente; apenas apagar o arquivo ou o commit não torna o valor seguro novamente.
 
-## Linux/macOS
+## GitHub Actions
 
-É necessário Python 3 apenas para aplicar o ZIP; o bot continua sendo Java. Execute da pasta extraída, apontando para um clone limpo do commit original:
+O workflow `Verify` é executado em pushes e pull requests. Ele usa JDK 25, PostgreSQL 17 temporário e credenciais descartáveis de teste para executar:
 
 ```bash
-python3 aplicar-atualizacao.py --repositorio /caminho/do/clone/bot-ofertas
-cd /caminho/do/clone/bot-ofertas
-git status --short
-git diff --stat
-git add .
-git diff --cached --stat
-git commit -m "Implementa coleta de ofertas e fila persistente"
-git push -u origin HEAD
+bash mvnw -B verify
 ```
 
-## Abrir a revisão e conferir os testes
+Esse processo não consulta marketplaces, não acessa o canal e não envia mensagens ao Telegram. Quando os testes passam, o workflow disponibiliza temporariamente:
 
-1. Abra [seu repositório](https://github.com/Caique-java/bot-ofertas) e crie um pull request da branch enviada para `main`.
-2. Use o texto de [PULL_REQUEST.md](PULL_REQUEST.md) como descrição.
-3. Na aba **Actions**, abra a execução **Verify** da sua branch e confira o resultado. O workflow roda a cada push em branches e em pull requests.
-4. Se passar, revise a alteração e faça o merge quando estiver satisfeito. Uma execução com falha não valida o pacote; abra o passo com erro para investigar.
+- `bot-ofertas-jar`: aplicação empacotada;
+- `test-reports`: relatórios dos testes automatizados.
 
-Se já usa GitHub CLI autenticado, você pode abrir um rascunho pelo terminal do clone:
+Para baixar um artefato, abra **Actions**, escolha uma execução verde e localize **Artifacts**. Veja as [instruções oficiais do GitHub](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/download-workflow-artifacts).
 
-```bash
-gh pr create --draft --base main --title "Coleta de ofertas com fila persistente" --body-file docs/PULL_REQUEST.md
-```
+## O que o GitHub não faz neste projeto
 
-O workflow instala JDK 25, inicia PostgreSQL 17 e executa `bash mvnw -B verify` com o POM padrão. Depois de o workflow existir na branch padrão, ele também permite execução manual por **Actions → Verify → Run workflow**.
-
-## Baixar e executar o JAR
-
-Em uma execução **bem-sucedida** do workflow, abra a seção **Artifacts** e baixe `bot-ofertas-jar`. Extraia o arquivo `bot-ofertas-1.0.0.jar`. Também são disponibilizados relatórios em `test-reports`; os artefatos têm retenção de sete dias nesta configuração. É preciso estar conectado ao GitHub e ter acesso ao repositório para baixar os artefatos. [Instruções oficiais](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/download-workflow-artifacts).
-
-Para usar o JAR, instale Java 25, disponibilize PostgreSQL e configure as variáveis de ambiente de acordo com o README. Execute no diretório onde está sua pasta `config`:
-
-```bash
-java -jar bot-ofertas-1.0.0.jar
-```
-
-Spring executado diretamente não carrega `.env` automaticamente. Configure as variáveis no terminal/serviço ou use o Docker Compose, que lê esse arquivo. O JAR sozinho não inclui o banco nem as suas credenciais.
-
-O GitHub hospeda o código e executa o workflow de teste/build. Para monitoramento contínuo, mantenha o bot em um computador ou servidor ligado, conforme o [README](../README.md). Este projeto não usa GitHub Pages para executar Java nem agenda Actions como serviço permanente.
-
-Referência do workflow: [build e testes Java com Maven](https://docs.github.com/en/actions/tutorials/build-and-test-code/java-with-maven).
+O GitHub guarda o código, executa testes e gera o JAR. O workflow termina após essas tarefas e não mantém o bot funcionando 24 horas. A operação contínua ainda exige uma máquina ou serviço de hospedagem, PostgreSQL persistente, internet, monitoramento e credenciais válidas.
