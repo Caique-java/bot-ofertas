@@ -1,0 +1,90 @@
+spring:
+  application:
+    name: bot-ofertas
+  config:
+    import: optional:file:./config/monitoramento.yml
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/bot_ofertas}
+    username: ${DB_USER:bot}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: 6
+      connection-timeout: 5000
+  flyway:
+    # Set true ONCE only when adopting an existing database; baseline version 0 runs V1.
+    baseline-on-migrate: ${DB_BASELINE:false}
+    baseline-version: 0
+  task:
+    scheduling:
+      pool:
+        size: 4
+      shutdown:
+        await-termination: true
+        await-termination-period: 25s
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  shutdown: graceful
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: ${HEALTH_DETAILS:never}
+      probes:
+        enabled: true
+bot:
+  dry-run: ${BOT_DRY_RUN:true}
+  scheduling-enabled: ${BOT_SCHEDULING_ENABLED:true}
+  max-age: 15m
+  repost-after: 12h
+  repost-drop-percent: 5
+  queue-capacity: 500
+  max-attempts: 5
+  min-message-interval: 30s
+  max-messages-per-hour: 20
+  telegram:
+    token: ${TELEGRAM_TOKEN:}
+    chat-id: ${TELEGRAM_CHAT_ID:}
+    paused: ${BOT_PAUSED:false}
+  filters:
+    min-price: 0.01
+    max-price: 1000000
+    min-discount-percent: 10
+    allow-store-reference: false
+    allow-prime: false
+    allowed-sellers: []
+    blocked-sellers: []
+    excluded-categories: []
+    excluded-terms: []
+  mercado-livre:
+    enabled: ${ML_ENABLED:false}
+    access-token: ${ML_ACCESS_TOKEN:}
+    publication-authorized: ${ML_PUBLICATION_AUTHORIZED:false}
+    retain-history: ${ML_RETAIN_HISTORY:false}
+    interval: 5m
+    request-interval: 2s
+    products: []
+    keywords: []
+  amazon:
+    enabled: ${AMAZON_ENABLED:false}
+    client-id: ${AMAZON_CLIENT_ID:}
+    client-secret: ${AMAZON_CLIENT_SECRET:}
+    partner-tag: ${AMAZON_PARTNER_TAG:}
+    publication-authorized: ${AMAZON_PUBLICATION_AUTHORIZED:false}
+    retain-history: false
+    interval: 5m
+    request-interval: 2s
+    products: []
+    keywords: []
+logging:
+  file:
+    name: ${LOG_FILE:logs/bot-ofertas.log}
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7
+      total-size-cap: 100MB

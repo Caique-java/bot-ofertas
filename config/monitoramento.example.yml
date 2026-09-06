@@ -1,0 +1,26 @@
+# Copy to config/monitoramento.yml; replace IDs with products authorized for your account.
+# Contains configuration examples only; no offer data is injected into the pipeline.
+bot:
+  filters:
+    min-price: 10
+    max-price: 5000
+    min-discount-percent: 10
+    allow-store-reference: false
+    allow-prime: false
+    excluded-terms: [usado, recondicionado]
+    allowed-sellers: []
+    blocked-sellers: []
+    excluded-categories: []
+  mercado-livre:
+    products: []
+    # - id: MLB_ID_REAL
+    #   variant: "ID_DA_VARIACAO_SE_HOUVER"
+    #   seller: "ID_DO_VENDEDOR"
+    #   target-price: 199.90
+  amazon:
+    products: []
+    # - id: ASIN_REAL
+    #   seller: "ID_DO_VENDEDOR_OPCIONAL"
+    #   target-price: 199.90
+    keywords: []
+    browse-node-id: ""

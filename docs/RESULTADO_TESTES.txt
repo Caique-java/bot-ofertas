@@ -1,0 +1,12 @@
+[INFO] Compiling with eclipse [debug parameters target 25] to target/classes
+[INFO] Compiling with eclipse [debug parameters target 25] to target/test-classes
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.234 s -- in com.ofertas.bot.BotOfertasApplicationTests
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.480 s -- in com.ofertas.bot.QueueIntegrationTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in com.ofertas.bot.ConnectorTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.061 s -- in com.ofertas.bot.SourceHttpTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in com.ofertas.bot.OfferRulesTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.020 s -- in com.ofertas.bot.TelegramTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 s -- in com.ofertas.bot.PipelineTest
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+[INFO] Total time:  40.806 s

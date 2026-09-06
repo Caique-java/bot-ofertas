@@ -1,0 +1,56 @@
+name: Verify
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: bot_test
+          POSTGRES_USER: bot
+          POSTGRES_PASSWORD: test-only-password
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U bot -d bot_test"
+          --health-interval 10s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DB_URL: jdbc:postgresql://localhost:5432/bot_test
+      TEST_DB_USER: bot
+      TEST_DB_PASSWORD: test-only-password
+      BOT_DRY_RUN: 'true'
+      BOT_SCHEDULING_ENABLED: 'false'
+      ML_ENABLED: 'false'
+      AMAZON_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Test and package
+        run: bash mvnw -B verify
+      - name: Save application JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: bot-ofertas-jar
+          path: target/bot-ofertas-1.0.0.jar
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: target/surefire-reports/
+          retention-days: 7
