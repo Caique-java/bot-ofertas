@@ -167,10 +167,14 @@ Para rollback: volte à imagem anterior somente se ela for compatível com o esq
 
 O [guia do GitHub](docs/GITHUB.md) mostra como clonar o projeto, manter configurações privadas fora dos commits, revisar mudanças e executar o workflow. Para alterações futuras, crie uma branch, confira o diff, faça commit e abra um pull request.
 
-## Estado validado em 06/09/2026
+## Estado validado em 07/09/2026
 
 O pipeline controlado completo do Java foi aprovado no canal privado: oferta de teste -> PostgreSQL -> fila -> revalidação -> Telegram, com `message_id=37` e deduplicação confirmada. A suíte de 34 testes também passou no Windows usando um banco exclusivo de testes.
 
-O repositório atual foi criado com histórico limpo, passou duas vezes no GitHub Actions e foi tornado público após a conferência de segurança. As integrações reais de marketplace e a operação 24 horas continuam pendentes; `BOT_DRY_RUN=true`, `ML_ENABLED=false` e `AMAZON_ENABLED=false` permanecem como configuração segura inicial.
+O repositório atual foi criado com histórico limpo, teve três execuções aprovadas no GitHub Actions e foi tornado público após a conferência de segurança.
+
+No Windows, o ambiente Docker Compose também foi validado: a imagem da aplicação foi construída, o PostgreSQL 17.11 iniciou saudável, o Flyway aplicou a migração V1 e o endpoint de saúde retornou `UP`. O reinício do bot foi concluído normalmente, o volume do banco sobreviveu a `docker compose down` seguido de `up`, e um backup foi restaurado com sucesso em um banco temporário contendo as sete tabelas esperadas e a versão 1 do Flyway.
+
+Essa validação comprova o funcionamento local e a recuperação dos dados, mas não é hospedagem contínua. As integrações reais de marketplace e a operação 24 horas em uma máquina ou servidor externo continuam pendentes; `BOT_DRY_RUN=true`, `BOT_PAUSED=true`, `ML_ENABLED=false` e `AMAZON_ENABLED=false` permanecem como configuração segura inicial.
 
 Para apresentar o trabalho em vídeo ou entrevista, consulte [o resumo do projeto](docs/RESUMO_ENTREVISTA.md). Os detalhes de evidência e limites estão em [VALIDACAO.md](docs/VALIDACAO.md).

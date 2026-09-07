@@ -8,6 +8,7 @@
 - Telegram com escape HTML, checagem de permissões e confirmação da resposta; dry-run como padrão.
 - Configuração externa, Docker Compose, migração, documentação e 34 testes aprovados no ambiente de validação e repetidos com sucesso no Windows do proprietário.
 - Repositório GitHub recriado com histórico limpo; workflow de testes/geração de JAR executado com sucesso na branch `main`.
+- Execução local com Docker Compose validada, incluindo saúde, reinício, persistência do volume e restauração de backup em banco isolado.
 
 ## Trabalho de desenvolvimento que pode ser feito a seguir
 
@@ -35,17 +36,20 @@ O GitHub pode armazenar o código, executar testes e disponibilizar o JAR. O wor
 
 ## Ponto de retomada confirmado - 04/09/2026
 
-O proprietário já configurou IntelliJ e PostgreSQL, renovou o token Telegram, adicionou o bot ao canal privado e validou um envio manual pela API. A próxima ação é criar a aplicação no portal de desenvolvedores do Mercado Livre. Ele possui cadastro/ID de afiliado, mas ainda não criou essa aplicação nem concluiu OAuth.
+O proprietário já configurou IntelliJ e PostgreSQL, renovou o token Telegram, adicionou o bot ao canal privado e validou um envio manual pela API. A criação da aplicação no portal de desenvolvedores do Mercado Livre e o OAuth continuam pendentes. Enquanto essa etapa não estava disponível, a validação avançou para Docker, persistência e recuperação.
 
 Manter dry-run e fontes desabilitadas até a configuração das credenciais e dos produtos. O canal permanece privado durante os testes. Consulte [RESUMO_ENTREVISTA.md](RESUMO_ENTREVISTA.md) para a apresentação do projeto e [VALIDACAO.md](VALIDACAO.md) para o alcance dos testes.
 
-## Estado atualizado - 06/09/2026
+## Estado atualizado - 07/09/2026
 
 - Pipeline controlado Java -> PostgreSQL -> fila -> revalidação -> Telegram aprovado no canal privado com `message_id=37`.
 - Registro da fila e da tentativa confirmado como `SENT`, com uma única tentativa; deduplicação aprovada.
 - Trava interna adicionada ao teste manual e confirmação temporária removida da configuração do IntelliJ.
 - Banco isolado `bot_ofertas_test` e usuário `bot_test` criados; suíte Maven aprovada no Windows usando esse banco.
 - Token atual não foi incorporado aos arquivos do projeto.
-- Repositório antigo excluído, novo histórico limpo publicado em `main`, dois workflows `Verify` aprovados e repositório tornado público após a conferência de segurança.
+- Repositório antigo excluído, novo histórico limpo publicado em `main`, três workflows `Verify` aprovados e repositório tornado público após a conferência de segurança.
+- Docker Compose aprovado localmente com aplicação saudável, PostgreSQL 17.11, Flyway V1 e sete tabelas.
+- Reinício do bot e recriação dos contêineres aprovados sem perda do volume do banco.
+- Backup criado, validado e restaurado com sucesso em banco temporário; o teste não alterou o banco principal.
 
-Próximas frentes independentes do Mercado Livre: preparar backup/monitoramento e escolher a infraestrutura para operação 24 horas. As fontes reais permanecem desabilitadas até suas credenciais e autorizações estarem disponíveis.
+Próximas frentes independentes do Mercado Livre: automatizar backups, configurar monitoramento e escolher a infraestrutura para operação 24 horas. As fontes reais permanecem desabilitadas até suas credenciais e autorizações estarem disponíveis.

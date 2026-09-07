@@ -43,9 +43,9 @@ O POM de produção permanece com compilação Java 25 pelo compilador padrão d
 - Autenticação ou coleta com contas reais Amazon/Mercado Livre.
 - Coleta e revalidação com credenciais e ofertas reais do Mercado Livre/Amazon; o pipeline Java controlado até o canal real foi validado posteriormente.
 - Renovação OAuth Mercado Livre, que continua pendente de implementação/homologação.
-- Compose/Docker e limites sob carga em uma máquina de produção.
+- Limites sob carga e execução prolongada em uma máquina de produção.
 - Concorrência em PostgreSQL 17 nativo com múltiplas conexões.
-- Implantação Docker e operação contínua em uma máquina de produção.
+- Implantação em infraestrutura externa e operação contínua 24 horas.
 
 ## Como repetir no ambiente definitivo
 
@@ -80,7 +80,7 @@ Evidência: logs e saídas de comando enviados pelo proprietário nesta conversa
 - O verificador PowerShell inicial falhou sem resposta HTTP. TCP/HTTPS funcionaram por IPv4; a versão 2 usando curl/IPv4 confirmou token, canal privado e permissão de publicação.
 - O usuário executou um teste manual de envio. A API Telegram confirmou a mensagem 36 no canal privado. Não houve envio durante a validação local dos scripts pelo assistente.
 
-**Alcance:** o envio confirmado foi feito pelo script PowerShell auxiliar; não atravessou a fila, o revalidador e o worker Java. A coleta real Mercado Livre/Amazon, a publicação completa pelo Java, os testes automatizados no Windows e a operação contínua ainda estão pendentes.
+**Alcance naquela etapa:** o envio confirmado foi feito pelo script PowerShell auxiliar; não atravessou a fila, o revalidador e o worker Java. A coleta real Mercado Livre/Amazon, a publicação completa pelo Java, os testes automatizados no Windows e a operação contínua ainda estavam pendentes. As validações posteriores estão registradas abaixo.
 
 O pacote de encerramento inclui esses auxiliares em uma pasta de apoio local separada do código publicável. O código Java não mudou nesta etapa, portanto os 34 testes anteriores não foram repetidos para essas mudanças de documentação. Foram conferidos os relatórios existentes, o conteúdo do pacote e seus hashes.
 
@@ -121,7 +121,7 @@ O proprietário criou o banco isolado `bot_ofertas_test`, pertencente ao usuári
 
 As variáveis `TEST_DB_*` apontaram somente para o banco de testes; `bot_ofertas_v2` não foi usado pela suíte. A senha foi lida de forma oculta e removida do ambiente do PowerShell ao final. `LiveTelegramPipelineIT` não faz parte da seleção normal do Surefire, portanto essa execução não enviou outra mensagem ao Telegram.
 
-Com isso, ficaram validados no Windows nativo: compilação, contexto Spring, migração Flyway, regras de oferta, conectores simulados, concorrência da fila em PostgreSQL, tratamento do Telegram simulado e empacotamento Maven. Permanecem fora desse alcance as APIs reais dos marketplaces, carga de produção, Docker e operação contínua.
+Com isso, ficaram validados no Windows nativo: compilação, contexto Spring, migração Flyway, regras de oferta, conectores simulados, concorrência da fila em PostgreSQL, tratamento do Telegram simulado e empacotamento Maven. Naquela etapa, permaneceram fora desse alcance as APIs reais dos marketplaces, carga de produção, Docker e operação contínua. A validação local do Docker foi realizada posteriormente.
 
 ## Publicação limpa e GitHub Actions - 06/09/2026
 
@@ -129,4 +129,19 @@ O proprietário excluiu o repositório remoto antigo e criou `Caique-java/bot-of
 
 O push da branch `main` foi concluído. O workflow `Verify` associado ao commit `3d9fb52` terminou com sucesso em aproximadamente 1 minuto e 15 segundos. Assim, o POM padrão, JDK 25, PostgreSQL 17, os 34 testes e a criação dos artefatos foram exercitados no GitHub Actions sem credenciais de Telegram ou marketplaces.
 
-O repositório foi mantido privado durante a validação, recebeu depois o commit documental `ea3f4e8` e teve uma segunda execução verde do workflow. Após a conferência de segurança, foi tornado público. O aplicativo não foi implantado pelo Actions; o workflow termina depois de testar e empacotar.
+O repositório foi mantido privado durante a validação, recebeu depois o commit documental `ea3f4e8` e teve uma segunda execução verde do workflow. Após a conferência de segurança, foi tornado público. A atualização documental `9e90006` também passou, totalizando três execuções verdes registradas. O aplicativo não foi implantado pelo Actions; o workflow termina depois de testar e empacotar.
+
+## Validação Docker, persistência e recuperação - 07/09/2026
+
+O proprietário instalou Docker Desktop 4.89.0 em WSL 2 e confirmou Docker Engine 29.7.2 e Docker Compose v5.5.0. A configuração foi validada por `docker compose config --quiet`, sem inclusão do `.env` ou da configuração local no Git.
+
+- `docker compose up -d --build` construiu a imagem da aplicação e iniciou os dois serviços.
+- O PostgreSQL 17.11 ficou saudável e permaneceu acessível somente pela rede interna do Compose.
+- A aplicação iniciou com Java 25.0.4 e Spring Boot 3.5.16; Hikari abriu a conexão, o Flyway aplicou V1 e o endpoint `/actuator/health` retornou `UP`.
+- Foram conferidas as sete tabelas: `bot_guard`, `channel_state`, `flyway_schema_history`, `offer_queue`, `price_observation`, `publication_attempt` e `source_state`.
+- O reinício isolado do bot fez encerramento gracioso do Tomcat e do Hikari, reconectou ao banco e voltou a responder `UP`; o Flyway reconheceu o schema na versão 1.
+- Um backup em formato custom do PostgreSQL, com 12.638 bytes, foi criado e aceito por `pg_restore --list`.
+- Esse backup foi restaurado em um banco temporário isolado. A restauração recuperou as sete tabelas e a versão 1 do Flyway; o banco e o arquivo temporários foram removidos após a conferência.
+- Após `docker compose down` sem `-v`, o volume nomeado `bot-ofertas_pgdata` continuou existente. Um novo `docker compose up -d` reutilizou os dados, encontrou V1 já aplicada e devolveu a aplicação saudável.
+
+**Alcance:** foram validados o empacotamento e a execução local em contêineres, a conexão entre aplicação e banco, o ciclo de reinício, a persistência do volume e o procedimento de backup/restauração. As fontes continuaram desabilitadas, o bot permaneceu pausado e em dry-run, e nenhum envio ao Telegram foi realizado. Isso não comprova carga de produção nem operação externa 24 horas.

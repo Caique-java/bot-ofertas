@@ -11,9 +11,11 @@
 [INFO] BUILD SUCCESS
 [INFO] Total time:  40.806 s
 
-VALIDACOES POSTERIORES CONFIRMADAS PELO PROPRIETARIO EM 06/09/2026
+VALIDACOES POSTERIORES CONFIRMADAS PELO PROPRIETARIO EM 06 E 07/09/2026
 - Maven verify: 34 testes aprovados no Windows, Java 25.0.2 e PostgreSQL 18.4, usando bot_ofertas_test.
 - Pipeline controlado Java -> PostgreSQL -> fila -> Telegram aprovado com message_id=37.
-- GitHub Actions Verify aprovado nos commits 3d9fb52 e ea3f4e8, com JDK 25 e PostgreSQL 17.
+- GitHub Actions Verify aprovado nos commits 3d9fb52, ea3f4e8 e 9e90006, com JDK 25 e PostgreSQL 17.
 - Repositorio atual publicado com historico limpo e sem credenciais reais.
-- APIs reais dos marketplaces, Docker e operacao 24 horas continuam pendentes.
+- Docker Compose local aprovado com health UP, PostgreSQL 17.11, Flyway V1 e sete tabelas.
+- Reinicio, persistencia do volume apos down/up e restauracao do backup em banco temporario aprovados.
+- APIs reais dos marketplaces, carga prolongada e operacao externa 24 horas continuam pendentes.

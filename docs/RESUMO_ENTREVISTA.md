@@ -1,6 +1,6 @@
 # Bot de ofertas: resumo para vídeo e entrevista
 
-Registro atualizado em 06/09/2026. Versão de trabalho 1.0.0, em integração e testes.
+Registro atualizado em 07/09/2026. Versão de trabalho 1.0.0, em integração e testes.
 
 ## O que é
 Um backend Java para monitorar produtos em fontes autorizadas, avaliar se atendem a critérios de oferta e preparar ou publicar mensagens no Telegram. A meta é operação contínua; o serviço só deve publicar quando houver uma oferta elegível.
@@ -22,7 +22,8 @@ A estrutura separa clients (APIs externas), services (regras e publicação), re
 | Flyway | Migrações SQL versionadas para criar/evoluir as tabelas. |
 | APIs HTTP + JSON | Comunicação com marketplaces e Telegram. |
 | Actuator e logs | Saúde da aplicação e diagnóstico. |
-| Git/GitHub e Docker | Versionamento/CI e execução reproduzível preparada; hospedagem ainda pendente. |
+| Git/GitHub | Versionamento, revisão pública do código e testes automáticos no CI. |
+| Docker Compose | Execução reproduzível da aplicação e do PostgreSQL, com volume persistente; hospedagem ainda pendente. |
 
 ## Fluxo que o código implementa
 1. O agendador consulta os produtos configurados nas fontes habilitadas.
@@ -33,7 +34,7 @@ A estrutura separa clients (APIs externas), services (regras e publicação), re
 Se uma resposta de envio se perder, o registro pode ficar UNCERTAIN: a aplicação evita repetir automaticamente algo que talvez já tenha chegado. Não há garantia de entrega exatamente uma vez.
 
 ## Banco de dados
-No computador de testes: PostgreSQL 18.4, banco bot_ofertas_v2. O pacote Docker/CI está preparado para PostgreSQL 17. Houve aviso de compatibilidade do Flyway com PostgreSQL 18; a migração V1 e a inicialização funcionaram, mas o alinhamento de versões ainda será revisado.
+No ambiente nativo de testes: PostgreSQL 18.4, banco `bot_ofertas_v2`. Houve aviso de compatibilidade do Flyway com PostgreSQL 18; mesmo assim, a migração V1 e a inicialização funcionaram. O ambiente Docker foi validado separadamente com PostgreSQL 17.11, versão alinhada ao pacote e ao CI.
 
 | Tabela | Papel |
 |---|---|
@@ -59,13 +60,15 @@ Preços usam BigDecimal no Java e numeric no SQL para manter precisão decimal. 
 - Concluído: token, canal privado e permissão de publicação verificados; Telegram confirmou a mensagem 36 enviada pelo script auxiliar.
 - Concluído: pipeline controlado Java -> PostgreSQL -> fila -> revalidação -> Telegram, com `message_id=37`, uma tentativa e deduplicação aprovada.
 - Testes: 34 testes automatizados aprovados no ambiente inicial, no Windows com PostgreSQL nativo e no GitHub Actions com JDK 25/PostgreSQL 17.
-- GitHub: repositório antigo excluído, histórico limpo publicado e workflow `Verify` aprovado. Isso valida CI, mas não é implantação 24h.
+- Docker: imagem construída e serviços iniciados; saúde `UP`, Flyway V1, sete tabelas, reinício gracioso e persistência após recriar os contêineres.
+- Recuperação: backup validado e restaurado em banco temporário com as sete tabelas e a versão 1 do Flyway.
+- GitHub: repositório antigo excluído, histórico limpo publicado e três execuções do workflow `Verify` aprovadas. Isso valida CI, mas não é implantação 24h.
 - Pendente: criação/autorização da aplicação Mercado Livre, coleta real de ambas as fontes, links de afiliado ML, renovação automática do token ML e operação 24h.
 
 O ID de afiliado não substitui o token usado pelo conector. Os links ML atuais são links comuns: a integração de links com comissão ainda precisa ser concluída. Não anunciar cupons, Pix, parcelamento ou frete quando essas condições não vierem de uma fonte autorizada e verificada.
 
 ## Uma fala de aproximadamente um minuto
-Estou evoluindo um bot de ofertas em Java com Spring Boot, com apoio de ferramentas de IA na revisão e implementação. O objetivo é consultar fontes autorizadas do Mercado Livre e da Amazon, avaliar preço e disponibilidade e publicar ofertas no Telegram. Usei PostgreSQL para persistir a fila e as tentativas de envio, e Flyway para versionar a estrutura do banco. O projeto tem modo de simulação, controle de duplicidade e tratamento de falhas. Validei no canal privado o fluxo completo do Java, desde a gravação no banco até a confirmação do Telegram. Os 34 testes passaram no Windows e também no GitHub Actions. Agora faltam as autorizações reais dos marketplaces e a infraestrutura para funcionamento contínuo.
+Estou evoluindo um bot de ofertas em Java com Spring Boot, com apoio de ferramentas de IA na revisão e implementação. O objetivo é consultar fontes autorizadas do Mercado Livre e da Amazon, avaliar preço e disponibilidade e publicar ofertas no Telegram. Usei PostgreSQL para persistir a fila e as tentativas de envio, e Flyway para versionar a estrutura do banco. O projeto tem modo de simulação, controle de duplicidade e tratamento de falhas. Validei no canal privado o fluxo completo do Java, desde a gravação no banco até a confirmação do Telegram. Os 34 testes passaram no Windows e também no GitHub Actions. Depois, validei a execução com Docker Compose, incluindo reinício, persistência do volume e restauração de backup. Agora faltam as autorizações reais dos marketplaces e a infraestrutura para funcionamento contínuo.
 
 ## Respostas curtas para perguntas comuns
 - Por que banco? Para manter fila e resultados após reinícios e reduzir perda de trabalho.
@@ -73,6 +76,6 @@ Estou evoluindo um bot de ofertas em Java com Spring Boot, com apoio de ferramen
 - O que é dry-run? Executar a validação e produzir prévias sem publicar pelo fluxo Java.
 - Como evita duplicidade? Identidade estável da oferta, índice único para trabalhos ativos e regras de republicação; falhas ambíguas ficam em análise.
 - Como funciona 24h? Um processo em uma máquina/servidor ligado, com internet, reinício e monitoramento, banco persistente e credenciais válidas. GitHub guarda/testa o código; este workflow não hospeda o bot continuamente.
-- Já está pronto? A base e testes locais estão avançados; APIs reais e operação contínua ainda estão em validação.
+- Já está pronto? A base, os testes e a recuperação do ambiente Docker local estão validados; APIs reais e operação contínua externa ainda estão pendentes.
 
 Para entrevista, apresente o que você consegue explicar e demonstrar. O roteiro descreve um projeto em evolução e reconhece o apoio de IA, sem alegar operação em produção ou autoria integral sem auxílio.
